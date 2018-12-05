@@ -16,7 +16,7 @@ contract storeEcocAddr {
     }
     
   
-    modifier basicChecks(string _ecocAddress, address _ethAdress)
+    modifier basicChecks(address _ethAdress, string _ecocAddress)
     {
         /* check if _ecocAdress starts with "E" */
         require(
@@ -28,8 +28,16 @@ contract storeEcocAddr {
             bytes(_ecocAddress).length == 34 ,
             "Wrong ecoc address. Ecoc address must have a length of exactly 34 bytes."
         );
+        /* check if _ethAdress is already in the array */
+        bool addrExists = false ;
+        for (uint c=0; c<ethToEcoc.length; c++) {
+            if (ethToEcoc[c].ethAddress==_ethAdress) {
+                addrExists = true;
+                break ;
+            }
+        }
         require(
-            true,// check if _ethAdress is already in the array
+            !addrExists,
             "This ethereum address is already registered."
         );
         
@@ -42,13 +50,13 @@ contract storeEcocAddr {
         return  firstChar;
     }
     
-    function chooseEcoAddress(string _addr) public basicChecks(_addr, msg.sender) returns(uint registeredAddresses)  {
+    function chooseEcoAddress(string _ecocAddr) public basicChecks(msg.sender, _ecocAddr) returns(uint registeredAddresses)  {
         /* do error checking for _addr, use modifier
         check length and if starts with "E"
         */
         EthToEcoc memory m;
         m.ethAddress = msg.sender;
-        m.ecocAddress = _addr;
+        m.ecocAddress = _ecocAddr;
         ethToEcoc.push(m);
         return ethToEcoc.length;
     }
