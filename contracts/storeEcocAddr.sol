@@ -10,13 +10,14 @@ contract storeEcocAddr {
     address public owner;
     EthToEcoc[] public ethToEcoc;
 
+    event BroadcastAddr(address _ethA, string _ecocA,uint registered);
     
     constructor() public {
         owner = msg.sender;
     }
     
   
-    modifier basicChecks(address _ethAdress, string _ecocAddress)
+    modifier basicChecks(address _ethAddress, string _ecocAddress)
     {
         /* check if _ecocAdress starts with "E" */
         require(
@@ -31,7 +32,7 @@ contract storeEcocAddr {
         /* check if _ethAdress is already in the array */
         bool addrExists = false ;
         for (uint c=0; c<ethToEcoc.length; c++) {
-            if (ethToEcoc[c].ethAddress==_ethAdress) {
+            if (ethToEcoc[c].ethAddress==_ethAddress) {
                 addrExists = true;
                 break ;
             }
@@ -58,6 +59,7 @@ contract storeEcocAddr {
         m.ethAddress = msg.sender;
         m.ecocAddress = _ecocAddr;
         ethToEcoc.push(m);
+        emit BroadcastAddr(m.ethAddress, m.ecocAddress, ethToEcoc.length);
         return ethToEcoc.length;
     }
     
